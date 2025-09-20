@@ -381,6 +381,11 @@ public static partial class Ecs
     /// <summary>
     ///     Reference to <see cref="EcsInherit"/>.
     /// </summary>
+    public static ref ulong Singleton => ref EcsSingleton;
+    
+    /// <summary>
+    ///     Reference to <see cref="EcsInherit"/>.
+    /// </summary>
     public static ref ulong Inherit => ref EcsInherit;
 
     /// <summary>

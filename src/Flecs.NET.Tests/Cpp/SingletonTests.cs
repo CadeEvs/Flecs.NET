@@ -1,3 +1,4 @@
+using Flecs.NET.Bindings;
 using Flecs.NET.Core;
 using Xunit;
 
@@ -119,10 +120,12 @@ public unsafe class SingletonTests
     {
         using World world = World.Create();
 
+        world.Component<Position>().Add(Ecs.Singleton);
+        
         world.Set(new Position(10, 20));
 
         world.System()
-            .Expr("[inout] Position($)")
+            .Expr("[inout] Position")
             .Run((Iter it) =>
             {
                 while (it.Next())

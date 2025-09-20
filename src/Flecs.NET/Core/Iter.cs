@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using Flecs.NET.Bindings;
 using Flecs.NET.Core.BindingContext;
 using Flecs.NET.Utilities;
 using static Flecs.NET.Bindings.flecs;
@@ -538,9 +539,25 @@ public unsafe partial struct Iter : IEnumerable<int>, IEquatable<Iter>, IDisposa
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal UntypedField GetUntypedField(int index)
     {
+        int count;
+        int size = (int)ecs_field_size(Handle, (byte)index);
+        bool isShared = !ecs_field_is_self(Handle, (byte)index);
+
+        if (isShared)
+        {
+            count = 1;
+        }
+        else
+        {
+            count = Handle->count;
+        }
+
+        var test = ecs_field_w_size(Handle, size, (byte)index);
+        return new UntypedField(test, size, count);
+        
         return new UntypedField(
-            ecs_field_w_size(Handle, 0, (byte)index),
-            (int)ecs_field_size(Handle, (byte)index),
+            ecs_field_w_size(Handle, size, (byte)index),
+            size,
             ecs_field_is_self(Handle, (byte)index) ? Handle->count : 1
         );
     }
