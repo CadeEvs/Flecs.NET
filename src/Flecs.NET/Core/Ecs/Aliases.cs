@@ -376,6 +376,11 @@ public static partial class Ecs
     /// <summary>
     ///     Reference to <see cref="EcsInherit"/>.
     /// </summary>
+    public static ref ulong DontFragment => ref EcsDontFragment;
+    
+    /// <summary>
+    ///     Reference to <see cref="EcsInherit"/>.
+    /// </summary>
     public static ref ulong Inherit => ref EcsInherit;
 
     /// <summary>
@@ -451,11 +456,6 @@ public static partial class Ecs
     /// </summary>
     public static ref ulong Sparse => ref EcsSparse;
 
-    /// <summary>
-    ///     Reference to <see cref="EcsUnion"/>.
-    /// </summary>
-    public static ref ulong Union => ref EcsUnion;
-
     // Built-in predicates for comparing entity ids in queries.
 
     /// <summary>
@@ -522,6 +522,11 @@ public static partial class Ecs
     /// </summary>
     public static ref ulong OnValidate => ref EcsOnValidate;
 
+    /// <summary>
+    ///     Reference to <see cref="EcsOnValidate"/>.
+    /// </summary>
+    public static ref ulong OrderedChildren => ref EcsOrderedChildren;
+    
     /// <summary>
     ///     Reference to <see cref="EcsPostUpdate"/>.
     /// </summary>

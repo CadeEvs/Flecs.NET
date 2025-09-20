@@ -58,10 +58,9 @@ public unsafe partial struct IterIterable : IEquatable<IterIterable>
         fixed (ecs_iter_t* it = &Iterator)
         {
             using NativeString nativeName = (NativeString)name;
-
-            ecs_query_iter_t* iter = &it->priv_.iter.query;
-            int varId = ecs_query_find_var(iter->query, nativeName);
-
+            
+            int varId = ecs_query_find_var(it->query, nativeName);
+            
             Ecs.Assert(varId != -1, nameof(ECS_INVALID_PARAMETER));
             ecs_iter_set_var(it, varId, value);
 
@@ -80,9 +79,8 @@ public unsafe partial struct IterIterable : IEquatable<IterIterable>
         fixed (ecs_iter_t* it = &Iterator)
         {
             using NativeString nativeName = (NativeString)name;
-
-            ecs_query_iter_t* iter = &it->priv_.iter.query;
-            int varId = ecs_query_find_var(iter->query, nativeName);
+            
+            int varId = ecs_query_find_var(it->query, nativeName);
 
             Ecs.Assert(varId != -1, nameof(ECS_INVALID_PARAMETER));
             ecs_iter_set_var_as_table(it, varId, value);
@@ -102,9 +100,8 @@ public unsafe partial struct IterIterable : IEquatable<IterIterable>
         fixed (ecs_iter_t* it = &Iterator)
         {
             using NativeString nativeName = (NativeString)name;
-
-            ecs_query_iter_t* iter = &it->priv_.iter.query;
-            int varId = ecs_query_find_var(iter->query, nativeName);
+            
+            int varId = ecs_query_find_var(it->query, nativeName);
 
             Ecs.Assert(varId != -1, nameof(ECS_INVALID_PARAMETER));
             ecs_iter_set_var_as_range(it, varId, &value);

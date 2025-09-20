@@ -2942,15 +2942,18 @@ public unsafe partial struct Entity : IEquatable<Entity>, IEntity<Entity>
     /// <returns></returns>
     public ref Entity SetJson(ulong e, string json, ecs_from_json_desc_t* desc = null)
     {
-        ulong type = ecs_get_typeid(World, e);
-
+        ecs_type_info_t* ti = ecs_get_type_info(World, e);
+        Ecs.Assert(ti != null, nameof(ECS_INTERNAL_ERROR));
+        
+        ulong type = ti->component;
+        
         if (type == 0)
         {
             Ecs.Error("Id is not a type");
             return ref this;
         }
 
-        void* ptr = ecs_ensure_id(World, Id, e);
+        void* ptr = ecs_ensure_id(World, Id, e, ti->size);
         Ecs.Assert(ptr != null, nameof(ECS_INTERNAL_ERROR));
 
         using NativeString nativeJson = (NativeString)json;
@@ -3128,7 +3131,10 @@ public unsafe partial struct Entity : IEquatable<Entity>, IEntity<Entity>
     /// <returns></returns>
     public void* EnsurePtr(ulong id)
     {
-        return ecs_ensure_id(World, Id, id);
+        ecs_type_info_t* ti = ecs_get_type_info(World, id);
+        Ecs.Assert(ti != null, nameof(ECS_INVALID_PARAMETER));
+        
+        return ecs_ensure_id(World, Id, id, ti->size);
     }
 
     /// <summary>
@@ -3150,7 +3156,7 @@ public unsafe partial struct Entity : IEquatable<Entity>, IEntity<Entity>
     public T* EnsurePtr<T>() where T : unmanaged
     {
         Ecs.Assert(Type<T>.Size != 0, nameof(ECS_INVALID_PARAMETER));
-        return (T*)ecs_ensure_id(World, Id, Type<T>.Id(World));
+        return (T*)ecs_ensure_id(World, Id, Type<T>.Id(World), Type<T>.Size);
     }
 
     /// <summary>
@@ -3237,7 +3243,7 @@ public unsafe partial struct Entity : IEquatable<Entity>, IEntity<Entity>
     public ref T Ensure<T>()
     {
         Ecs.Assert(Type<T>.Size != 0, nameof(ECS_INVALID_PARAMETER));
-        return ref Managed.GetTypeRef<T>(ecs_ensure_id(World, Id, Type<T>.Id(World)));
+        return ref Managed.GetTypeRef<T>(ecs_ensure_id(World, Id, Type<T>.Id(World), Type<T>.Size));
     }
 
     /// <summary>
@@ -3506,6 +3512,18 @@ public unsafe partial struct Entity : IEquatable<Entity>, IEntity<Entity>
         return NativeString.GetString(ecs_entity_from_json(World, Id, nativeJson, null));
     }
 
+    /// <summary>
+    ///     Changes the order of children as returned by entity.Children(). Only applicable to entities with the OrderedChildren trait.
+    /// </summary>
+    /// <param name="children"></param>
+    public void SetChildOrder(ulong[] children)
+    {
+        fixed (ulong* childrenPtr = children)
+        {
+            ecs_set_child_order(World, Id, childrenPtr, children.Length);       
+        }
+    }
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref Entity SetInternal<T>(ulong id, in T component)
     {
