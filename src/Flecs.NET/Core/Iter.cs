@@ -539,22 +539,7 @@ public unsafe partial struct Iter : IEnumerable<int>, IEquatable<Iter>, IDisposa
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal UntypedField GetUntypedField(int index)
     {
-        int count;
         int size = (int)ecs_field_size(Handle, (byte)index);
-        bool isShared = !ecs_field_is_self(Handle, (byte)index);
-
-        if (isShared)
-        {
-            count = 1;
-        }
-        else
-        {
-            count = Handle->count;
-        }
-
-        var test = ecs_field_w_size(Handle, size, (byte)index);
-        return new UntypedField(test, size, count);
-        
         return new UntypedField(
             ecs_field_w_size(Handle, size, (byte)index),
             size,
